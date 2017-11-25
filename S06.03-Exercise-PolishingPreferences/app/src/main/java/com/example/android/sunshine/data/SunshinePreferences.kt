@@ -13,34 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.sunshine.data;
+package com.example.android.sunshine.data
 
-import android.content.Context;
+import android.content.Context
+import android.preference.PreferenceManager
+import com.example.android.sunshine.R
 
-public class SunshinePreferences {
+object SunshinePreferences {
 
     /*
      * Human readable location string, provided by the API.  Because for styling,
      * "Mountain View" is more recognizable than 94043.
      */
-    public static final String PREF_CITY_NAME = "city_name";
+    val PREF_CITY_NAME = "city_name"
 
     /*
      * In order to uniquely pinpoint the location on the map when we launch the
      * map intent, we store the latitude and longitude.
      */
-    public static final String PREF_COORD_LAT = "coord_lat";
-    public static final String PREF_COORD_LONG = "coord_long";
+    val PREF_COORD_LAT = "coord_lat"
+    val PREF_COORD_LONG = "coord_long"
 
     /*
      * Before you implement methods to return your REAL preference for location,
      * we provide some default values to work with.
      */
-    private static final String DEFAULT_WEATHER_LOCATION = "94043,USA";
-    private static final double[] DEFAULT_WEATHER_COORDINATES = {37.4284, 122.0724};
+    private
+            /** This will be implemented in a future lesson  */
+    val defaultWeatherLocation = "94043,USA"
+    /** This will be implemented in a future lesson  */
+    val defaultWeatherCoordinates = doubleArrayOf(37.4284, 122.0724)
 
-    private static final String DEFAULT_MAP_LOCATION =
-            "1600 Amphitheatre Parkway, Mountain View, CA 94043";
+    private val DEFAULT_MAP_LOCATION = "1600 Amphitheatre Parkway, Mountain View, CA 94043"
 
     /**
      * Helper method to handle setting location details in Preferences (City Name, Latitude,
@@ -51,8 +55,8 @@ public class SunshinePreferences {
      * @param lat      The latitude of the city
      * @param lon      The longitude of the city
      */
-    static public void setLocationDetails(Context c, String cityName, double lat, double lon) {
-        /** This will be implemented in a future lesson **/
+    fun setLocationDetails(c: Context, cityName: String, lat: Double, lon: Double) {
+        /** This will be implemented in a future lesson  */
     }
 
     /**
@@ -64,8 +68,8 @@ public class SunshinePreferences {
      * @param lat             The latitude of the city
      * @param lon             The longitude of the city
      */
-    static public void setLocation(Context c, String locationSetting, double lat, double lon) {
-        /** This will be implemented in a future lesson **/
+    fun setLocation(c: Context, locationSetting: String, lat: Double, lon: Double) {
+        /** This will be implemented in a future lesson  */
     }
 
     /**
@@ -73,8 +77,8 @@ public class SunshinePreferences {
      *
      * @param c Context used to get the SharedPreferences
      */
-    static public void resetLocationCoordinates(Context c) {
-        /** This will be implemented in a future lesson **/
+    fun resetLocationCoordinates(c: Context) {
+        /** This will be implemented in a future lesson  */
     }
 
     /**
@@ -86,10 +90,12 @@ public class SunshinePreferences {
      * @return Location The current user has set in SharedPreferences. Will default to
      * "94043,USA" if SharedPreferences have not been implemented yet.
      */
-    public static String getPreferredWeatherLocation(Context context) {
-        // TODO (1) Return the user's preferred location
-        /** This will be implemented in a future lesson **/
-        return getDefaultWeatherLocation();
+    fun getPreferredWeatherLocation(context: Context): String {
+        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+
+        val key = context.getString(R.string.pref_location_key)
+        val default = context.getString(R.string.pref_location_default)
+        return preferences.getString(key, default)
     }
 
     /**
@@ -99,10 +105,14 @@ public class SunshinePreferences {
      *
      * @return true If metric display should be used
      */
-    public static boolean isMetric(Context context) {
-        // TODO (2) Return true if the user's preference for units is metric, false otherwise
-        /** This will be implemented in a future lesson **/
-        return true;
+    fun isMetric(context: Context): Boolean {
+        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+
+        val key = context.getString(R.string.pref_units_key)
+        val default = context.getString(R.string.pref_units_metric)
+        val metric = preferences.getString(key, default)
+
+        return metric == default
     }
 
     /**
@@ -113,8 +123,8 @@ public class SunshinePreferences {
      * @param context Used to get the SharedPreferences
      * @return An array containing the two coordinate values.
      */
-    public static double[] getLocationCoordinates(Context context) {
-        return getDefaultWeatherCoordinates();
+    fun getLocationCoordinates(context: Context): DoubleArray {
+        return defaultWeatherCoordinates
     }
 
     /**
@@ -124,18 +134,8 @@ public class SunshinePreferences {
      * @param context used to get the SharedPreferences
      * @return true if lat/long are set
      */
-    public static boolean isLocationLatLonAvailable(Context context) {
-        /** This will be implemented in a future lesson **/
-        return false;
-    }
-
-    private static String getDefaultWeatherLocation() {
-        /** This will be implemented in a future lesson **/
-        return DEFAULT_WEATHER_LOCATION;
-    }
-
-    public static double[] getDefaultWeatherCoordinates() {
-        /** This will be implemented in a future lesson **/
-        return DEFAULT_WEATHER_COORDINATES;
+    fun isLocationLatLonAvailable(context: Context): Boolean {
+        /** This will be implemented in a future lesson  */
+        return false
     }
 }
