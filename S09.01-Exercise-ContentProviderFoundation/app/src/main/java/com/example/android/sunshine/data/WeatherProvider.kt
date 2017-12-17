@@ -13,42 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.sunshine.data;
+package com.example.android.sunshine.data
 
-import android.annotation.TargetApi;
-import android.content.ContentProvider;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.net.Uri;
-import android.support.annotation.NonNull;
+import android.annotation.TargetApi
+import android.content.ContentProvider
+import android.content.ContentValues
+import android.content.UriMatcher
+import android.database.Cursor
+import android.net.Uri
 
 /**
  * This class serves as the ContentProvider for all of Sunshine's data. This class allows us to
  * bulkInsert data, query data, and delete data.
- * <p>
+ *
+ *
  * Although ContentProvider implementation requires the implementation of additional methods to
  * perform single inserts, updates, and the ability to get the type of the data from a URI.
  * However, here, they are not implemented for the sake of brevity and simplicity. If you would
  * like, you may implement them on your own. However, we are not going to be teaching how to do
  * so in this course.
  */
-public class WeatherProvider extends ContentProvider {
+class WeatherProvider : ContentProvider() {
+    companion object {
+        val CODE_WEATHER = 100
+        val CODE_WEATHER_WITH_DATE = 101
 
-//  TODO (5) Create static constant integer values named CODE_WEATHER & CODE_WEATHER_WITH_DATE to identify the URIs this ContentProvider can handle
+        val sUriMatcher = buildUriMatcher()
 
-//  TODO (7) Instantiate a static UriMatcher using the buildUriMatcher method
+        @JvmStatic
+        fun buildUriMatcher(): UriMatcher {
+            val uriMatcher = UriMatcher(UriMatcher.NO_MATCH)
 
-    WeatherDbHelper mOpenHelper;
+            uriMatcher.addURI(WeatherContract.CONTENT_AUTHORITY, WeatherContract.PATH_WEATHER, CODE_WEATHER)
+            uriMatcher.addURI(WeatherContract.CONTENT_AUTHORITY, "${WeatherContract.PATH_WEATHER}/#", CODE_WEATHER_WITH_DATE)
 
-//  TODO (6) Write a method called buildUriMatcher where you match URI's to their numeric ID
+            return uriMatcher
+        }
+    }
 
-//  TODO (1) Implement onCreate
-    @Override
-    public boolean onCreate() {
-//      TODO (2) Within onCreate, instantiate our mOpenHelper
+    private var mOpenHelper: WeatherDbHelper? = null
 
-//      TODO (3) Return true from onCreate to signify success performing setup
-        return false;
+    override fun onCreate(): Boolean {
+        mOpenHelper = WeatherDbHelper(context)
+        return true
     }
 
     /**
@@ -60,39 +67,61 @@ public class WeatherProvider extends ContentProvider {
      *
      * @param uri    The content:// URI of the insertion request.
      * @param values An array of sets of column_name/value pairs to add to the database.
-     *               This must not be {@code null}.
+     * This must not be `null`.
      *
      * @return The number of values that were inserted.
      */
-    @Override
-    public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
-        throw new RuntimeException("Student, you need to implement the bulkInsert mehtod!");
+    override fun bulkInsert(uri: Uri, values: Array<ContentValues>): Int {
+        throw RuntimeException("Student, you need to implement the bulkInsert mehtod!")
     }
 
-//  TODO (8) Provide an implementation for the query method
     /**
      * Handles query requests from clients. We will use this method in Sunshine to query for all
      * of our weather data as well as to query for the weather on a particular day.
      *
      * @param uri           The URI to query
      * @param projection    The list of columns to put into the cursor. If null, all columns are
-     *                      included.
+     * included.
      * @param selection     A selection criteria to apply when filtering rows. If null, then all
-     *                      rows are included.
+     * rows are included.
      * @param selectionArgs You may include ?s in selection, which will be replaced by
-     *                      the values from selectionArgs, in order that they appear in the
-     *                      selection.
+     * the values from selectionArgs, in order that they appear in the
+     * selection.
      * @param sortOrder     How the rows in the cursor should be sorted.
      * @return A Cursor containing the results of the query. In our implementation,
      */
-    @Override
-    public Cursor query(@NonNull Uri uri, String[] projection, String selection,
-                        String[] selectionArgs, String sortOrder) {
-        throw new RuntimeException("Student, implement the query method!");
+    override fun query(uri: Uri, projection: Array<String>?, selection: String?,
+                       selectionArgs: Array<String>?, sortOrder: String?): Cursor? {
 
-//      TODO (9) Handle queries on both the weather and weather with date URI
+        val db = mOpenHelper?.readableDatabase
+        var cursor: Cursor? = null
 
-//      TODO (10) Call setNotificationUri on the cursor and then return the cursor
+        when (sUriMatcher.match(uri)) {
+            CODE_WEATHER -> {
+                cursor = db?.query(WeatherContract.WeatherEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder)
+            }
+            CODE_WEATHER_WITH_DATE -> {
+                val date = uri.lastPathSegment
+                cursor = db?.query(WeatherContract.WeatherEntry.TABLE_NAME,
+                        projection,
+                        "${WeatherContract.WeatherEntry.COLUMN_DATE}=?",
+                        Array<String>(1) { date },
+                        null,
+                        null,
+                        sortOrder)
+            }
+            else -> UnsupportedOperationException("Unknown uri: $uri")
+        }
+
+        cursor?.setNotificationUri(context.contentResolver, uri)
+
+        return cursor
     }
 
     /**
@@ -103,9 +132,8 @@ public class WeatherProvider extends ContentProvider {
      * @param selectionArgs Used in conjunction with the selection statement
      * @return The number of rows deleted
      */
-    @Override
-    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
-        throw new RuntimeException("Student, you need to implement the delete method!");
+    override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
+        throw RuntimeException("Student, you need to implement the delete method!")
     }
 
     /**
@@ -118,31 +146,28 @@ public class WeatherProvider extends ContentProvider {
      * @param uri the URI to query.
      * @return nothing in Sunshine, but normally a MIME type string, or null if there is no type.
      */
-    @Override
-    public String getType(@NonNull Uri uri) {
-        throw new RuntimeException("We are not implementing getType in Sunshine.");
+    override fun getType(uri: Uri): String? {
+        throw RuntimeException("We are not implementing getType in Sunshine.")
     }
 
     /**
      * In Sunshine, we aren't going to do anything with this method. However, we are required to
      * override it as WeatherProvider extends ContentProvider and insert is an abstract method in
      * ContentProvider. Rather than the single insert method, we are only going to implement
-     * {@link WeatherProvider#bulkInsert}.
+     * [WeatherProvider.bulkInsert].
      *
      * @param uri    The URI of the insertion request. This must not be null.
      * @param values A set of column_name/value pairs to add to the database.
-     *               This must not be null
+     * This must not be null
      * @return nothing in Sunshine, but normally the URI for the newly inserted item.
      */
-    @Override
-    public Uri insert(@NonNull Uri uri, ContentValues values) {
-        throw new RuntimeException(
-                "We are not implementing insert in Sunshine. Use bulkInsert instead");
+    override fun insert(uri: Uri, values: ContentValues?): Uri? {
+        throw RuntimeException(
+                "We are not implementing insert in Sunshine. Use bulkInsert instead")
     }
 
-    @Override
-    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        throw new RuntimeException("We are not implementing update in Sunshine");
+    override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<String>?): Int {
+        throw RuntimeException("We are not implementing update in Sunshine")
     }
 
     /**
@@ -150,10 +175,9 @@ public class WeatherProvider extends ContentProvider {
      * framework in running smoothly. You can read more at:
      * http://developer.android.com/reference/android/content/ContentProvider.html#shutdown()
      */
-    @Override
     @TargetApi(11)
-    public void shutdown() {
-        mOpenHelper.close();
-        super.shutdown();
+    override fun shutdown() {
+        mOpenHelper!!.close()
+        super.shutdown()
     }
 }
