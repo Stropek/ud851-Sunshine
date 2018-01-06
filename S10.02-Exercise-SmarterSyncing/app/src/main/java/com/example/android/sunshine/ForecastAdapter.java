@@ -107,16 +107,16 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
          * Weather Summary *
          *******************/
         /* Read date from the cursor */
-        long dateInMillis = mCursor.getLong(MainActivity.INDEX_WEATHER_DATE);
+        long dateInMillis = mCursor.getLong(MainActivity.Companion.getINDEX_WEATHER_DATE());
         /* Get human readable string using our utility method */
         String dateString = SunshineDateUtils.getFriendlyDateString(mContext, dateInMillis, false);
         /* Use the weatherId to obtain the proper description */
-        int weatherId = mCursor.getInt(MainActivity.INDEX_WEATHER_CONDITION_ID);
+        int weatherId = mCursor.getInt(MainActivity.Companion.getINDEX_WEATHER_CONDITION_ID());
         String description = SunshineWeatherUtils.getStringForWeatherCondition(mContext, weatherId);
         /* Read high temperature from the cursor (in degrees celsius) */
-        double highInCelsius = mCursor.getDouble(MainActivity.INDEX_WEATHER_MAX_TEMP);
+        double highInCelsius = mCursor.getDouble(MainActivity.Companion.getINDEX_WEATHER_MAX_TEMP());
         /* Read low temperature from the cursor (in degrees celsius) */
-        double lowInCelsius = mCursor.getDouble(MainActivity.INDEX_WEATHER_MIN_TEMP);
+        double lowInCelsius = mCursor.getDouble(MainActivity.Companion.getINDEX_WEATHER_MIN_TEMP());
 
         String highAndLowTemperature =
                 SunshineWeatherUtils.formatHighLows(mContext, highInCelsius, lowInCelsius);
@@ -178,7 +178,7 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
             mCursor.moveToPosition(adapterPosition);
-            long dateInMillis = mCursor.getLong(MainActivity.INDEX_WEATHER_DATE);
+            long dateInMillis = mCursor.getLong(MainActivity.Companion.getINDEX_WEATHER_DATE());
             mClickHandler.onClick(dateInMillis);
         }
     }
