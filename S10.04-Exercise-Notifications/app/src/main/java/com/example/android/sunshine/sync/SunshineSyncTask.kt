@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.sunshine.sync;
+package com.example.android.sunshine.sync
 
-import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.content.Context;
+import android.content.ContentResolver
+import android.content.ContentValues
+import android.content.Context
 
-import com.example.android.sunshine.data.WeatherContract;
-import com.example.android.sunshine.utilities.NetworkUtils;
-import com.example.android.sunshine.utilities.OpenWeatherJsonUtils;
+import com.example.android.sunshine.data.WeatherContract
+import com.example.android.sunshine.utilities.NetworkUtils
+import com.example.android.sunshine.utilities.OpenWeatherJsonUtils
 
-import java.net.URL;
+import java.net.URL
 
-public class SunshineSyncTask {
+object SunshineSyncTask {
 
     /**
      * Performs the network request for updated weather, parses the JSON from that request, and
@@ -35,7 +35,8 @@ public class SunshineSyncTask {
      *
      * @param context Used to access utility methods and the ContentResolver
      */
-    synchronized public static void syncWeather(Context context) {
+    @Synchronized
+    fun syncWeather(context: Context) {
 
         try {
             /*
@@ -43,14 +44,14 @@ public class SunshineSyncTask {
              * weather. It will decide whether to create a URL based off of the latitude and
              * longitude or off of a simple location as a String.
              */
-            URL weatherRequestUrl = NetworkUtils.getUrl(context);
+            val weatherRequestUrl = NetworkUtils.getUrl(context)
 
             /* Use the URL to retrieve the JSON */
-            String jsonWeatherResponse = NetworkUtils.getResponseFromHttpUrl(weatherRequestUrl);
+            val jsonWeatherResponse = NetworkUtils.getResponseFromHttpUrl(weatherRequestUrl)
 
             /* Parse the JSON into a list of weather values */
-            ContentValues[] weatherValues = OpenWeatherJsonUtils
-                    .getWeatherContentValuesFromJson(context, jsonWeatherResponse);
+            val weatherValues = OpenWeatherJsonUtils
+                    .getWeatherContentValuesFromJson(context, jsonWeatherResponse)
 
             /*
              * In cases where our JSON contained an error code, getWeatherContentValuesFromJson
@@ -58,34 +59,34 @@ public class SunshineSyncTask {
              * NullPointerExceptions being thrown. We also have no reason to insert fresh data if
              * there isn't any to insert.
              */
-            if (weatherValues != null && weatherValues.length != 0) {
+            if (weatherValues !=
+                    null && weatherValues.size != 0) {
                 /* Get a handle on the ContentResolver to delete and insert data */
-                ContentResolver sunshineContentResolver = context.getContentResolver();
+                val sunshineContentResolver = context.contentResolver
 
                 /* Delete old weather data because we don't need to keep multiple days' data */
                 sunshineContentResolver.delete(
-                        WeatherContract.WeatherEntry.CONTENT_URI,
-                        null,
-                        null);
+                        WeatherContract.WeatherEntry.CONTENT_URI, null, null)
 
                 /* Insert our new weather data into Sunshine's ContentProvider */
                 sunshineContentResolver.bulkInsert(
                         WeatherContract.WeatherEntry.CONTENT_URI,
-                        weatherValues);
+                        weatherValues)
 
-//              TODO (13) Check if notifications are enabled
+                //              TODO (13) Check if notifications are enabled
 
-//              TODO (14) Check if a day has passed since the last notification
+                //              TODO (14) Check if a day has passed since the last notification
 
-//              TODO (15) If more than a day have passed and notifications are enabled, notify the user
+                //              TODO (15) If more than a day have passed and notifications are enabled, notify the user
 
-            /* If the code reaches this point, we have successfully performed our sync */
+                /* If the code reaches this point, we have successfully performed our sync */
 
             }
 
-        } catch (Exception e) {
+        } catch (e: Exception) {
             /* Server probably invalid */
-            e.printStackTrace();
+            e.printStackTrace()
         }
+
     }
 }
