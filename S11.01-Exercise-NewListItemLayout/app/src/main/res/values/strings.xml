@@ -62,6 +62,7 @@
 
     <string name="content_authority">com.example.android.sunshine</string>
 
+    <string name="weather_icon">Weather icon</string>
 
     <!-- - - - - - - - - - - - - - - -
       - Used by SunshinePreferences  -
@@ -233,7 +234,7 @@
     <string name="a11y_pressure">Barometric Pressure: <xliff:g id="pressure">%1$s</xliff:g></string>
     <string name="a11y_wind">Wind speed and direction: <xliff:g id="wind">%1$s</xliff:g></string>
 
-
+    <string name="sample_temp">10</string>
 
     <!-- Used by NotificationUtils -->
 
