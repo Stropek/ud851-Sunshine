@@ -203,23 +203,19 @@ class DetailActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor
          * the date representation for the local date in local time.
          * SunshineDateUtils#getFriendlyDateString takes care of this for us.
          */
-        val localDateMidnightGmt = data!!.getLong(INDEX_WEATHER_DATE)
+        val localDateMidnightGmt = data.getLong(INDEX_WEATHER_DATE)
         val dateText = SunshineDateUtils.getFriendlyDateString(this, localDateMidnightGmt, true)
 
-        //      TODO (8) Use mDetailBinding to display the date
-//        mDetailBinding.primaryInfo.im
-//        mDateView!!.text = dateText
+        mDetailBinding.primaryInfo!!.day.text = dateText
 
         /* Use the weatherId to obtain the proper description */
         val description = SunshineWeatherUtils.getStringForWeatherCondition(this, weatherId)
+        val a11yDescription = getString(R.string.a11y_forecast, description)
 
-        //      TODO (15) Create the content description for the description for a11y
-
-        //      TODO (9) Use mDetailBinding to display the description and set the content description
         /* Set the text to display the description*/
-//        mDescriptionView!!.text = description
-
-        //      TODO (16) Set the content description of the icon to the same as the weather description a11y text
+        mDetailBinding.primaryInfo!!.condition.text = description
+        mDetailBinding.primaryInfo!!.condition.contentDescription = a11yDescription
+        mDetailBinding.primaryInfo!!.icon.contentDescription = a11yDescription
 
         /**************************
          * High (max) temperature *
@@ -232,12 +228,11 @@ class DetailActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor
          * String.
          */
         val highString = SunshineWeatherUtils.formatTemperature(this, highInCelsius)
+        val a11yHigh = getString(R.string.a11y_high_temp, highString)
 
-        //      TODO (17) Create the content description for the high temperature for a11y
-
-        //      TODO (10) Use mDetailBinding to display the high temperature and set the content description
         /* Set the text to display the high temperature */
-//        mHighTemperatureView!!.text = highString
+        mDetailBinding.primaryInfo!!.highTemperature.text = highString
+        mDetailBinding.primaryInfo!!.highTemperature.contentDescription = a11yHigh
 
         /*************************
          * Low (min) temperature *
@@ -250,12 +245,11 @@ class DetailActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor
          * String.
          */
         val lowString = SunshineWeatherUtils.formatTemperature(this, lowInCelsius)
+        val a11yLow = getString(R.string.a11y_low_temp, lowString)
 
-        //      TODO (18) Create the content description for the low temperature for a11y
-
-        //      TODO (11) Use mDetailBinding to display the low temperature and set the content description
         /* Set the text to display the low temperature */
-//        mLowTemperatureView!!.text = lowString
+        mDetailBinding.primaryInfo!!.lowTemperature.text = lowString
+        mDetailBinding.primaryInfo!!.lowTemperature.contentDescription = a11yLow
 
         /************
          * Humidity *
@@ -263,14 +257,11 @@ class DetailActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor
         /* Read humidity from the cursor */
         val humidity = data.getFloat(INDEX_WEATHER_HUMIDITY)
         val humidityString = getString(R.string.format_humidity, humidity)
+        val a11yHumidity = getString(R.string.a11y_humidity, humidityString)
 
-        //      TODO (20) Create the content description for the humidity for a11y
-
-        //      TODO (12) Use mDetailBinding to display the humidity and set the content description
         /* Set the text to display the humidity */
-//        mHumidityView!!.text = humidityString
-
-        //      TODO (19) Set the content description of the humidity label to the humidity a11y String
+        mDetailBinding.extraDetails!!.humidity.text = humidityString
+        mDetailBinding.extraDetails!!.humidity.contentDescription = a11yHumidity
 
         /****************************
          * Wind speed and direction *
@@ -279,14 +270,11 @@ class DetailActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor
         val windSpeed = data.getFloat(INDEX_WEATHER_WIND_SPEED)
         val windDirection = data.getFloat(INDEX_WEATHER_DEGREES)
         val windString = SunshineWeatherUtils.getFormattedWind(this, windSpeed, windDirection)
+        val a11yWind = getString(R.string.a11y_wind, windString)
 
-        //      TODO (21) Create the content description for the wind for a11y
-
-        //      TODO (13) Use mDetailBinding to display the wind and set the content description
         /* Set the text to display wind information */
-//        mWindView!!.text = windString
-
-        //      TODO (22) Set the content description of the wind label to the wind a11y String
+        mDetailBinding.extraDetails!!.wind.text = windString
+        mDetailBinding.extraDetails!!.wind.contentDescription = a11yWind
 
         /************
          * Pressure *
@@ -302,14 +290,11 @@ class DetailActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor
          * pressure.
          */
         val pressureString = getString(R.string.format_pressure, pressure)
+        val a11yPressure = getString(R.string.a11y_pressure, pressureString)
 
-        //      TODO (23) Create the content description for the pressure for a11y
-
-        //      TODO (14) Use mDetailBinding to display the pressure and set the content description
         /* Set the text to display the pressure information */
-//        mPressureView!!.text = pressureString
-
-        //      TODO (24) Set the content description of the pressure label to the pressure a11y String
+        mDetailBinding.extraDetails!!.pressure.text = pressureString
+        mDetailBinding.extraDetails!!.pressure.contentDescription = a11yPressure
 
         /* Store the forecast summary String in our forecast summary field to share later */
         mForecastSummary = String.format("%s - %s - %s/%s",

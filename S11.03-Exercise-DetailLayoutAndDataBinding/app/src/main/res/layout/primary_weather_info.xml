@@ -48,12 +48,11 @@
             android:id="@+id/condition"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            tools:text="@string/condition_522"
             app:layout_constraintEnd_toEndOf="@+id/icon"
             app:layout_constraintStart_toStartOf="@+id/icon"
-            app:layout_constraintTop_toBottomOf="@+id/icon" />
+            app:layout_constraintTop_toBottomOf="@+id/icon"
+            tools:text="@string/condition_522" />
 
         <TextView
             android:id="@+id/low_temperature"
