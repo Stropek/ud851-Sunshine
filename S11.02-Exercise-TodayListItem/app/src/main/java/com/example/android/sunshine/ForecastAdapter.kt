@@ -38,13 +38,8 @@ import com.example.android.sunshine.utilities.SunshineWeatherUtils
 internal class ForecastAdapter(private val mContext: Context, private val mClickHandler: ForecastAdapterOnClickHandler)
     : RecyclerView.Adapter<ForecastAdapter.ForecastAdapterViewHolder>() {
 
-    //  TODO (4) Create a resources file called bools.xml within the res/values-port directory
-    //  TODO (5) Within bools.xml in the portrait specific directory, add a bool called use_today_layout and set it to false
-
-    //  TODO (6) Declare constant IDs for the ViewType for today and for a future day
-    //      TODO (8) Set mUseTodayLayout to the value specified in resources
-
-    /* The context we use to utility methods, app resources and layout inflaters */
+    val VIEW_TODAY_ID = 1
+    val VIEW_FUTURE_ID = 2
 
     /*
      * Flag to determine if we want to use a separate view for the list item that represents
@@ -52,8 +47,7 @@ internal class ForecastAdapter(private val mContext: Context, private val mClick
      * is in landscape. This flag will be set in the constructor of the adapter by accessing
      * boolean resources.
      */
-    //  TODO (7) Declare a private boolean called mUseTodayLayout
-
+    private var mUseTodayLayout = mContext.resources.getBoolean(R.bool.use_today_layout)
     private var mCursor: Cursor? = null
 
     /**
@@ -76,15 +70,15 @@ internal class ForecastAdapter(private val mContext: Context, private val mClick
      */
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ForecastAdapterViewHolder {
 
-        //      TODO (12) If the view type of the layout is today, use today layout
-
-        //      TODO (13) If the view type of the layout is future day, use future day layout
-
-        //      TODO (14) Otherwise, throw an IllegalArgumentException
+        var itemLayout = when(viewType) {
+            VIEW_TODAY_ID -> R.layout.forecast_list_item_today
+            VIEW_FUTURE_ID -> R.layout.forecast_list_item
+            else -> throw IllegalArgumentException()
+        }
 
         val view = LayoutInflater
                 .from(mContext)
-                .inflate(R.layout.forecast_list_item, viewGroup, false)
+                .inflate(itemLayout, viewGroup, false)
 
         return ForecastAdapterViewHolder(view)
     }
@@ -106,16 +100,11 @@ internal class ForecastAdapter(private val mContext: Context, private val mClick
          * Weather Icon *
          */
         val weatherId = mCursor!!.getInt(MainActivity.INDEX_WEATHER_CONDITION_ID)
-        val weatherImageId: Int
-
-        //      TODO (15) If the view type of the layout is today, display a large icon
-
-        //      TODO (16) If the view type of the layout is future day, display a small icon
-
-        //      TODO (17) Otherwise, throw an IllegalArgumentException
-
-        weatherImageId = SunshineWeatherUtils
-                .getSmallArtResourceIdForWeatherCondition(weatherId)
+        val weatherImageId: Int = when(forecastAdapterViewHolder.itemViewType) {
+            VIEW_TODAY_ID -> SunshineWeatherUtils.getLargeArtResourceIdForWeatherCondition(weatherId)
+            VIEW_FUTURE_ID -> SunshineWeatherUtils.getSmallArtResourceIdForWeatherCondition(weatherId)
+            else -> throw IllegalArgumentException()
+        }
 
         forecastAdapterViewHolder.iconView.setImageResource(weatherImageId)
 
@@ -187,9 +176,12 @@ internal class ForecastAdapter(private val mContext: Context, private val mClick
         return if (null == mCursor) 0 else mCursor!!.count
     }
 
-    //  TODO (9) Override getItemViewType
-    //      TODO (10) Within getItemViewType, if mUseTodayLayout is true and position is 0, return the ID for today viewType
-    //      TODO (11) Otherwise, return the ID for future day viewType
+    override fun getItemViewType(position: Int): Int {
+        if (mUseTodayLayout && position == 0)
+            return VIEW_TODAY_ID
+
+        return VIEW_FUTURE_ID
+    }
 
     /**
      * Swaps the cursor used by the ForecastAdapter for its weather data. This method is called by
